@@ -1,0 +1,13 @@
+{
+  "name": "MicroShell",
+  "version": "0.4.0",
+  "keywords": "Shell, Serial",
+  "description": "Arduino library to create Micro Shell Application.",
+  "repository":
+  {
+    "type": "git",
+    "url": "https://github.com/tcafiero/MicroShell.git"
+  },
+  "frameworks": "arduino",
+  "platforms": "nordicnrf5x, atmelavr, atmelsam, teensy"
+}

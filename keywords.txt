@@ -1,0 +1,28 @@
+#######################################
+# Syntax Coloring Map For Queue
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+PublishFunctionStruct	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+InitMicroShell	KEYWORD2
+MicroShell	KEYWORD2
+argvscanf	KEYWORD2
+result	KEYWORD2
+ParserPutchar KEYWORD2
+ParserGetchar KEYWORD2
+
+#######################################
+# Instances (KEYWORD2)
+#######################################
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+FIFO	LITERAL1
+LIFO	LITERAL1
