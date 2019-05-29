@@ -14,8 +14,8 @@ InitMicroShell	KEYWORD2
 MicroShell	KEYWORD2
 argvscanf	KEYWORD2
 result	KEYWORD2
-ParserPutchar KEYWORD2
-ParserGetchar KEYWORD2
+ParserPutchar	KEYWORD2
+ParserGetchar	KEYWORD2
 
 #######################################
 # Instances (KEYWORD2)
