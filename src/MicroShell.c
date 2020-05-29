@@ -1,10 +1,8 @@
-//delete comment in following statement if you need echo
-//#define ECHO 1
-
 //delete comment in following statement if you need debug print
-#define DEBUG 1
+//#define DEBUG 1
 
 // Do not touch following lines end comment
+#include "Arduino.h"
 #include "MicroShell.h"
 #include <stdio.h>
 #include <string.h>
@@ -16,6 +14,13 @@ char buffer[BUFSIZE];
 char *argv[PARAMETERSNUM];
 int argc;
 int i;
+char MicroShellEcho;
+const char BS=0x8;
+const char BELL=0x7;
+const char LF=0xa;
+const char CR=0xd;
+const char PROMPT='>';
+
 
 int CallFormat(char* src)
 {
@@ -28,6 +33,7 @@ int CallFormat(char* src)
     if ( *src == ' ' ) *src = '\0';
   }
   while (*++src != '\0');
+  argc = i;
   return i;
 }
 
@@ -35,6 +41,7 @@ int argvscanf(  const char *format, ... )
 {
   va_list ap;
   int conv = 1, *i;
+  float *f;
   char *a;
   const char *fp;
   va_start ( ap, format );
@@ -45,6 +52,10 @@ int argvscanf(  const char *format, ... )
           i = va_arg ( ap, int * );
           *i = atoi ( argv[conv] );
           break;
+		case 'f':
+		  f = va_arg ( ap, float * );
+		  *f = atof( argv[conv] );
+		  break;
         case 's':
           a = va_arg ( ap, char * );
           strncpy ( a, argv[conv], strlen ( argv[conv] ) + 1 );
@@ -57,73 +68,26 @@ int argvscanf(  const char *format, ... )
   return conv;
 }
 
-#if 0
-int sscanf( char *src, char *format, ... )
-{
-  va_list ap;
-  int conv = 0, *i, index;
-  char *a, *fp, *sp = src, buf[BUFSIZE] = {'\0'};
-
-  va_start ( ap, format );
-  for ( fp = format; *fp != '\0'; fp++ ) {
-    for ( index = 0; *sp != '\0' && *sp != ' '; index++ )
-      buf[index] = *sp++;
-    while ( *sp == ' ' ) sp++;
-    while ( *fp != '%' ) fp++;
-    if ( *fp == '%' ) {
-      switch ( *++fp ) {
-        case 'd':
-          i = va_arg ( ap, int * );
-          *i = atoi ( buf );
-          break;
-        case 's':
-          a = va_arg ( ap, char * );
-          strncpy ( a, buf, strlen ( buf ) + 1 );
-          break;
-      }
-      conv++;
-    }
-  }
-  va_end ( ap );
-  return conv;
-}
-#endif
-
-void result(char *format, ...)
-{
-  va_list ap;
-  const char *fp;
-  va_start ( ap, format );
-  for ( fp = format; *fp != '\0'; fp++ ) {
-    if ( *fp == '%' ) {
-      switch ( *++fp ) {
-        case 'd':
-          printf("%d", va_arg ( ap, int ));
-          ParserPutchar(0xa);
-          ParserPutchar(0xd);
-          break;
-        case 's':
-          printf("%s", va_arg ( ap, char * ));
-          ParserPutchar(0xa);
-          ParserPutchar(0xd);
-          break;
-      }
-    }
-  }
-  va_end ( ap );
-}
-
 static void Scanner()
 {
   int i;
+  if (argc == 0) return;
+  //for(i=0; i < argc; i++) printf("%d -> %s\n", i, argv[i]);
   for (i = 0; strlen(PublishFunction[i].name); i++)
   {
     if (strcmp(PublishFunction[i].name, argv[0]) == 0)
     {
+	  ParserPutchar(&CR);
       (*PublishFunction[i].pfunc)(0, argv);
-      break;
+	  for(int j=0; j < BUFSIZE; j++) buffer[j]=0;
+	  ParserPutchar(&CR);
+	  ParserPutchar(&PROMPT);
+      return;
     }
   }
+    for(int j=0; j < BUFSIZE; j++) buffer[j]=0;
+    ParserPutchar(&CR);
+    ParserPutchar(&PROMPT);
 }
 
 static void Execute(char *buffer)
@@ -137,6 +101,18 @@ static void Execute(char *buffer)
 void InitMicroShell()
 {
   i = 0;
+  MicroShellEcho = 1;
+  for(int j=0; j < BUFSIZE; j++) buffer[j]=0;
+}
+
+void disableEcho()
+{
+	MicroShellEcho = 0;
+}
+
+void enableEcho()
+{
+	MicroShellEcho = 1;
 }
 
 void MicroShell()
@@ -144,34 +120,30 @@ void MicroShell()
   char ch = (char)ParserGetchar();
   switch (ch)
   {
-    case 0x8:   if (i)
+    //case 0x8:   if (i)
+    case '<':   if (i)
       {
-#ifdef ECHO
-        i--;
-        ParserPutchar((int)ch);
-#endif
+		i--;
+		ParserPutchar(&BS);
       }
       break;
     case 0x0a:
     case 0x0d:
       buffer[i] = 0;
-      ParserPutchar(0xd);
       Execute(buffer);
       i = 0;
       buffer[0] = 0;
-      //ParserPutchar(0xd);
-#ifdef ECHO
-      ParserPutchar('>');
-#endif
       break;
     default:    if (i >= BUFSIZE - 2)
       {
-        ParserPutchar((int)0x7);
+        ParserPutchar(&BELL);
         break;
       }
-      buffer[i++] = ch;
-#ifdef ECHO
-      ParserPutchar((int)ch);
-#endif
+	  if (isprint(ch)) {
+		buffer[i++] = ch;
+		ParserPutchar(&ch);
+		break;
+		}
+		
   }
 }

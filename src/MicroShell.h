@@ -21,8 +21,10 @@ void InitMicroShell();
 void MicroShell();
 int argvscanf(  const char *format, ... );
 void result(char *format, ...);
-void ParserPutchar(int ch);
+void ParserPutchar(const char ch[]);
 int ParserGetchar();
+void disableEcho();
+void enableEcho();
 #ifdef __cplusplus
 }
 #endif
