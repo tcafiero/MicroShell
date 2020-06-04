@@ -18,6 +18,8 @@ extern PublishFunctionStruct PublishFunction[];
 
 
 void InitMicroShell();
+void enableExecution();
+void disableExecution();
 void MicroShell();
 int argvscanf(  const char *format, ... );
 void result(char *format, ...);

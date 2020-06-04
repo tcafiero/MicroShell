@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #define BUFSIZE 80
 #define PARAMETERSNUM 10
+static char executionEnabled;
 char buffer[BUFSIZE];
 char *argv[PARAMETERSNUM];
 int argc;
@@ -78,7 +79,7 @@ static void Scanner()
     if (strcmp(PublishFunction[i].name, argv[0]) == 0)
     {
 	  ParserPutchar(&CR);
-      (*PublishFunction[i].pfunc)(0, argv);
+      if(executionEnabled || (strcmp(argv[0], "askAccess") ==0))(*PublishFunction[i].pfunc)(0, argv);
 	  for(int j=0; j < BUFSIZE; j++) buffer[j]=0;
 	  ParserPutchar(&CR);
 	  ParserPutchar(&PROMPT);
@@ -102,7 +103,18 @@ void InitMicroShell()
 {
   i = 0;
   MicroShellEcho = 1;
+  executionEnabled = 1;
   for(int j=0; j < BUFSIZE; j++) buffer[j]=0;
+}
+
+void enableExecution()
+{
+	executionEnabled=1;
+}
+
+void disableExecution()
+{
+	executionEnabled=0;
 }
 
 void disableEcho()
