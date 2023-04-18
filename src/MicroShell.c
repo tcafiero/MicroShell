@@ -8,8 +8,6 @@
 #include <string.h>
 #include <stdarg.h>
 #include <stdlib.h>
-#define BUFSIZE 80
-#define PARAMETERSNUM 10
 static char executionEnabled;
 char buffer[BUFSIZE];
 char *argv[PARAMETERSNUM];
@@ -21,6 +19,11 @@ const char BELL=0x7;
 const char LF=0xa;
 const char CR=0xd;
 const char PROMPT='>';
+
+void ParserPutchar(const char ch[]) __attribute__((weak));
+void ParserPutchar(const char ch[]) {
+}
+
 
 
 int CallFormat(char* src)
@@ -91,7 +94,7 @@ static void Scanner()
     ParserPutchar(&PROMPT);
 }
 
-static void Execute(char *buffer)
+void Execute(char *buffer)
 {
   CallFormat(buffer);
   Scanner();
@@ -159,3 +162,4 @@ void MicroShell()
 		
   }
 }
+

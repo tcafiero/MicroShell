@@ -7,6 +7,11 @@ extern "C"{
 
 #ifndef PublishFunctionStruct_DEFINED
 #define PublishFunctionStruct_DEFINED
+#define BUFSIZE 80
+#define PARAMETERSNUM 10
+
+extern char buffer[];
+
 typedef struct
 {
   char *name;
@@ -20,10 +25,10 @@ extern PublishFunctionStruct PublishFunction[];
 void InitMicroShell();
 void enableExecution();
 void disableExecution();
+void Execute(char *buffer);
 void MicroShell();
 int argvscanf(  const char *format, ... );
 void result(char *format, ...);
-void ParserPutchar(const char ch[]);
 int ParserGetchar();
 void disableEcho();
 void enableEcho();
